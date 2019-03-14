@@ -1,28 +1,27 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Layout, Row, Col, Button } from 'antd';
+import './App.scss';
+
+const { Header, Content/*, Footer*/ } = Layout;
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <Layout className="faw-app">
+                <Header>Feathers Admin</Header>
+                <Content>
+                    <Row>
+                        <Col span={20} offset={2} className="content-container">
+                            <Button type="primary" size="large">
+                                Get Started ➤
+                            </Button>
+                        </Col>
+                    </Row>
+                </Content>
+                {/*<Footer>Footer</Footer>*/}
+            </Layout>
+        );
+    }
 }
 
 export default App;

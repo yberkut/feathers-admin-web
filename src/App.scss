@@ -1,0 +1,24 @@
+@import "~antd/dist/antd.css";
+
+$background-color: #fff;
+
+.faw-app {
+
+  .ant-layout-header {
+    color: white;
+  }
+
+  .ant-layout-content {
+    background-color: $background-color;
+  }
+
+  .ant-layout-footer {
+    background-color: $background-color;
+  }
+
+  .content-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+  }
+}
