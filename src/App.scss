@@ -17,8 +17,10 @@ $background-color: #fff;
   }
 
   .content-container {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
+    padding: 20px 0;
+  }
+
+  .content-stack-item {
+    margin-bottom: 20px;
   }
 }

@@ -1,0 +1,12 @@
+$border-color: #e8e8e8;
+
+.root {
+  display: flex;
+  align-items: center;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  height: 48px;
+  margin: 12px 0;
+  box-shadow: 0 1px 1px 0 $border-color;
+  padding: 8px;
+}
