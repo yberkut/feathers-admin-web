@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Layout, Row, Col } from 'antd';
 import './App.scss';
 import ServerConnection from './features/server-connection';
-import UsersDashboard from './features/users-dashboard';
+import Users from './features/users';
 
 const { Header, Content/*, Footer*/ } = Layout;
 
@@ -19,7 +19,7 @@ class App extends Component {
                                     <ServerConnection />
                                 </Col>
                                 <Col className="content-stack-item">
-                                    <UsersDashboard />
+                                    <Users />
                                 </Col>
                             </Row>
                         </Col>
