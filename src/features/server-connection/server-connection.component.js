@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './server-connection.module.scss';
-import { Input, Select } from 'antd';
+import { Input, Select, Button } from 'antd';
 // import * as PropTypes from 'prop-types';
 
 const Search = Input.Search;
@@ -8,9 +8,11 @@ const Option = Select.Option;
 
 const ServerConnection = () => {
 
-    const [connectedTo, setConnectedTo] = useState('Disconnected');
+    const defaultConnectionInfo = 'Disconnected';
+    const [connectionInfo, setConnectionInfo] = useState(defaultConnectionInfo);
     const [protocol, setProtocol] = useState('http://');
     const [domain, setDomain] = useState('');
+    const [connected, setConnected] = useState(false);
 
     const protocolSelect = (
         <Select defaultValue={protocol} style={{ width: 90 }} onChange={value => setProtocol(value)}>
@@ -23,26 +25,46 @@ const ServerConnection = () => {
         if (!domain) {
             return;
         }
-        setConnectedTo(`Connected to ${protocol}${value}`);
+        setConnected(true);
         setDomain('');
+        setConnectionInfo(`Connected to ${protocol}${value}`);
+    };
+
+    const disconnectClick = () => {
+        setConnectionInfo(defaultConnectionInfo);
+        setConnected(false);
     };
 
     return (
         <div className={styles.root}>
             <div className={styles.stack}>
-                <Search
-                    className={styles.search}
-                    addonBefore={protocolSelect}
-                    placeholder="type server to connect"
-                    enterButton="Connect"
-                    size="large"
-                    value={domain}
-                    onChange={e => setDomain(e.target.value)}
-                    onSearch={connectClick}
-                />
-                <div className={styles.status}>
-                    {connectedTo}
-                </div>
+                {connected ? (
+                    <div className={styles.status}>
+                        <span className={styles.connectionInfo}>{connectionInfo}</span>
+                        <Button
+                            type="primary"
+                            shape="circle"
+                            icon="logout"
+                            onClick={disconnectClick}
+                        />
+                    </div>
+                ) : (
+                    <>
+                        <Search
+                            className={styles.search}
+                            addonBefore={protocolSelect}
+                            placeholder="type server to connect"
+                            enterButton="Connect"
+                            size="large"
+                            value={domain}
+                            onChange={e => setDomain(e.target.value)}
+                            onSearch={connectClick}
+                        />
+                        <div className={styles.status}>
+                            {connectionInfo}
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
