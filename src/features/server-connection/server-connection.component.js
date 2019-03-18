@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import styles from './server-connection.module.scss';
-import { Input, Select, Button } from 'antd';
+import { Input, Select, Button, Row, Col } from 'antd';
 // import * as PropTypes from 'prop-types';
 
-const Search = Input.Search;
 const Option = Select.Option;
 
 const ServerConnection = () => {
@@ -12,6 +11,7 @@ const ServerConnection = () => {
     const [connectionInfo, setConnectionInfo] = useState(defaultConnectionInfo);
     const [protocol, setProtocol] = useState('http://');
     const [domain, setDomain] = useState('');
+    const [connecting, setConnecting] = useState(false);
     const [connected, setConnected] = useState(false);
 
     const protocolSelect = (
@@ -21,13 +21,17 @@ const ServerConnection = () => {
         </Select>
     );
 
-    const connectClick = value => {
+    const connectClick = () => {
         if (!domain) {
             return;
         }
-        setConnected(true);
-        setDomain('');
-        setConnectionInfo(`Connected to ${protocol}${value}`);
+        setConnecting(true);
+        setTimeout(() => {
+            setConnecting(false);
+            setConnected(true);
+            setConnectionInfo(`Connected to ${protocol}${domain}`);
+            setDomain('');
+        }, 1000);
     };
 
     const disconnectClick = () => {
@@ -42,28 +46,33 @@ const ServerConnection = () => {
                     <div className={styles.status}>
                         <span className={styles.connectionInfo}>{connectionInfo}</span>
                         <Button
-                            type="primary"
-                            shape="circle"
                             icon="logout"
                             onClick={disconnectClick}
-                        />
+                        >Disconnect</Button>
                     </div>
                 ) : (
-                    <>
-                        <Search
-                            className={styles.search}
+                    <Row>
+                        <Col>
+                        <Input
+                            className={styles.connectInput}
                             addonBefore={protocolSelect}
                             placeholder="type server to connect"
-                            enterButton="Connect"
-                            size="large"
                             value={domain}
                             onChange={e => setDomain(e.target.value)}
-                            onSearch={connectClick}
+                            disabled={connecting}
                         />
+                        <Button
+                            className={styles.connectButton}
+                            type="primary"
+                            icon="login"
+                            loading={connecting}
+                            onClick={connectClick}
+                        >Connect</Button>
+                        </Col>
                         <div className={styles.status}>
                             {connectionInfo}
                         </div>
-                    </>
+                    </Row>
                 )}
             </div>
         </div>

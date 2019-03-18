@@ -52,7 +52,7 @@ const Users = () => {
     const expandableRowRenderer = record => {
         return (
             <Row type="flex">
-                <Col xs={6}><img src={record.avatar} width="100%" /></Col>
+                <Col xs={6}><img src={record.avatar} width="100%" alt="avatar" /></Col>
                 <Col xs={18}><p style={{ margin: 0 }}>{record.description}</p></Col>
             </Row>
         );

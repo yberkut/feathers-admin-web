@@ -8,8 +8,20 @@
   align-items: center;
 }
 
-.search {
+.connectInput {
   width: 400px;
+   input {
+     border-top-right-radius: 0;
+     border-bottom-right-radius: 0;
+     border-right-width: 0;
+   }
+}
+
+.connectButton {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left-width: 0;
+  //box-shadow: none;
 }
 
 .status {
