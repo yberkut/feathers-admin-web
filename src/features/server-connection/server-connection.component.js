@@ -1,42 +1,38 @@
 import React, { useState } from 'react';
 import styles from './server-connection.module.scss';
 import { Input, Select, Button, Row, Col } from 'antd';
+import { useConnection, defaultConnectionInfo } from '../../hooks/use-connection';
 // import * as PropTypes from 'prop-types';
 
 const Option = Select.Option;
 
 const ServerConnection = () => {
 
-    const defaultConnectionInfo = 'Disconnected';
-    const [connectionInfo, setConnectionInfo] = useState(defaultConnectionInfo);
-    const [protocol, setProtocol] = useState('http://');
+    const defaultProtocol = 'http://';
+    const [protocol, setProtocol] = useState(defaultProtocol);
     const [domain, setDomain] = useState('');
-    const [connecting, setConnecting] = useState(false);
-    const [connected, setConnected] = useState(false);
+    const {
+        connection: { info, loading, connected },
+        connect,
+        disconnect,
+        setInfo,
+    } = useConnection();
 
     const protocolSelect = (
-        <Select defaultValue={protocol} style={{ width: 90 }} onChange={value => setProtocol(value)}>
-            <Option value="http://">http://</Option>
+        <Select defaultValue={defaultProtocol} style={{ width: 90 }} onChange={value => setProtocol(value)}>
+            <Option value={defaultProtocol}>{defaultProtocol}</Option>
             <Option value="https://">https://</Option>
         </Select>
     );
 
-    const connectClick = () => {
-        if (!domain) {
-            return;
-        }
-        setConnecting(true);
-        setTimeout(() => {
-            setConnecting(false);
-            setConnected(true);
-            setConnectionInfo(`Connected to ${protocol}${domain}`);
-            setDomain('');
-        }, 1000);
+    const onConnected = () => {
+        setInfo(`Connected to ${protocol}${domain}`);
     };
 
-    const disconnectClick = () => {
-        setConnectionInfo(defaultConnectionInfo);
-        setConnected(false);
+    const onDisconnected = () => {
+        setInfo(defaultConnectionInfo);
+        setDomain('');
+        setProtocol(defaultProtocol);
     };
 
     return (
@@ -44,34 +40,35 @@ const ServerConnection = () => {
             <div className={styles.stack}>
                 {connected ? (
                     <div className={styles.status}>
-                        <span className={styles.connectionInfo}>{connectionInfo}</span>
+                        <span className={styles.connectionInfo}>{info}</span>
                         <Button
+                            htmlType="button"
+                            type="circle"
                             icon="logout"
-                            onClick={disconnectClick}
-                        >Disconnect</Button>
+                            loading={loading}
+                            onClick={() => disconnect(onDisconnected)}
+                        />
                     </div>
                 ) : (
                     <Row>
                         <Col>
-                        <Input
-                            className={styles.connectInput}
-                            addonBefore={protocolSelect}
-                            placeholder="type server to connect"
-                            value={domain}
-                            onChange={e => setDomain(e.target.value)}
-                            disabled={connecting}
-                        />
-                        <Button
-                            className={styles.connectButton}
-                            type="primary"
-                            icon="login"
-                            loading={connecting}
-                            onClick={connectClick}
-                        >Connect</Button>
+                            <Input
+                                className={styles.connectInput}
+                                addonBefore={protocolSelect}
+                                placeholder="type server to connect"
+                                value={domain}
+                                onChange={e => setDomain(e.target.value)}
+                                disabled={loading}
+                            />
+                            <Button
+                                htmlType="button"
+                                className={styles.connectButton}
+                                type="primary"
+                                icon="login"
+                                loading={loading}
+                                onClick={() => connect(onConnected, !!domain)}
+                            >Connect</Button>
                         </Col>
-                        <div className={styles.status}>
-                            {connectionInfo}
-                        </div>
                     </Row>
                 )}
             </div>
@@ -79,12 +76,6 @@ const ServerConnection = () => {
     );
 };
 
-// ServerConnection.propTypes = {
-//     className: PropTypes.string,
-//     children: PropTypes.oneOfType([
-//         PropTypes.arrayOf(PropTypes.node),
-//         PropTypes.node,
-//     ]),
-// };
+// ServerConnection.propTypes = {};
 
 export default ServerConnection;

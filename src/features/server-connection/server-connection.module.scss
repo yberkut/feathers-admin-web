@@ -10,6 +10,8 @@
 
 .connectInput {
   width: 400px;
+  vertical-align: middle;
+  margin-bottom: 2px;
    input {
      border-top-right-radius: 0;
      border-bottom-right-radius: 0;
@@ -29,5 +31,5 @@
 }
 
 .connectionInfo {
-  margin-right: 4px;
+  margin-right: 8px;
 }
