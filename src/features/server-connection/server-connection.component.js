@@ -1,22 +1,16 @@
 import React, { useState } from 'react';
 import styles from './server-connection.module.scss';
 import { Input, Select, Button, Row, Col } from 'antd';
-import { useConnection, defaultConnectionInfo } from '../../hooks/use-connection';
-// import * as PropTypes from 'prop-types';
+import { defaultConnectionInfo } from '../../hooks/use-connection';
+import * as PropTypes from 'prop-types';
 
 const Option = Select.Option;
 
-const ServerConnection = () => {
+const ServerConnection = ({ connectionInfo, loading, connected, connect, disconnect, setInfo }) => {
 
     const defaultProtocol = 'http://';
     const [protocol, setProtocol] = useState(defaultProtocol);
     const [domain, setDomain] = useState('');
-    const {
-        connection: { info, loading, connected },
-        connect,
-        disconnect,
-        setInfo,
-    } = useConnection();
 
     const protocolSelect = (
         <Select defaultValue={defaultProtocol} style={{ width: 90 }} onChange={value => setProtocol(value)}>
@@ -40,7 +34,7 @@ const ServerConnection = () => {
             <div className={styles.stack}>
                 {connected ? (
                     <div className={styles.status}>
-                        <span className={styles.connectionInfo}>{info}</span>
+                        <span className={styles.connectionInfo}>{connectionInfo}</span>
                         <Button
                             htmlType="button"
                             type="circle"
@@ -76,6 +70,13 @@ const ServerConnection = () => {
     );
 };
 
-// ServerConnection.propTypes = {};
+ServerConnection.propTypes = {
+    connectionInfo: PropTypes.string,
+    loading: PropTypes.bool,
+    connected: PropTypes.bool,
+    connect: PropTypes.func,
+    disconnect: PropTypes.func,
+    setInfo: PropTypes.func,
+};
 
 export default ServerConnection;
