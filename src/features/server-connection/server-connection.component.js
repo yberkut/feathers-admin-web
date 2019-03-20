@@ -6,7 +6,7 @@ import * as PropTypes from 'prop-types';
 
 const Option = Select.Option;
 
-const ServerConnection = ({ connectionInfo, loading, connected, connect, disconnect, setInfo }) => {
+const ServerConnection = ({ connectionInfo, loading, connected, connect, disconnect, setConnectionInfo }) => {
 
     const defaultProtocol = 'http://';
     const [protocol, setProtocol] = useState(defaultProtocol);
@@ -20,11 +20,11 @@ const ServerConnection = ({ connectionInfo, loading, connected, connect, disconn
     );
 
     const onConnected = () => {
-        setInfo(`Connected to ${protocol}${domain}`);
+        setConnectionInfo(`Connected to ${protocol}${domain}`);
     };
 
     const onDisconnected = () => {
-        setInfo(defaultConnectionInfo);
+        setConnectionInfo(defaultConnectionInfo);
         setDomain('');
         setProtocol(defaultProtocol);
     };
@@ -76,7 +76,7 @@ ServerConnection.propTypes = {
     connected: PropTypes.bool,
     connect: PropTypes.func,
     disconnect: PropTypes.func,
-    setInfo: PropTypes.func,
+    setConnectionInfo: PropTypes.func,
 };
 
 export default ServerConnection;

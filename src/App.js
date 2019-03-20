@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Row, Col, Typography } from 'antd';
+import { Layout, Row, Col, Typography, Alert } from 'antd';
 import './App.scss';
 import ServerConnection from './features/server-connection';
 import Users from './features/users';
@@ -11,10 +11,14 @@ const { Text } = Typography;
 const App = () => {
 
     const {
-        connection: { info: connectionInfo, loading, connected },
+        connectionInfo,
+        loading,
+        connected,
         connect,
         disconnect,
-        setInfo,
+        setConnectionInfo,
+        user,
+        error,
     } = useConnection();
 
     return (
@@ -24,6 +28,11 @@ const App = () => {
                     <Col>
                         Feathers Admin
                     </Col>
+                    {user && (
+                        <Col>
+                            Hello, {user.displayName} ;)
+                        </Col>
+                    )}
                     <Col>
                         <ServerConnection
                             connectionInfo={connectionInfo}
@@ -31,12 +40,13 @@ const App = () => {
                             connected={connected}
                             connect={connect}
                             disconnect={disconnect}
-                            setInfo={setInfo}
+                            setConnectionInfo={setConnectionInfo}
                         />
                     </Col>
                 </Row>
             </Header>
             <Content>
+                {error && <Alert type="error" message={error} banner closable />}
                 <Row>
                     <Col span={20} offset={2} className="content-container">
                         <Row>
