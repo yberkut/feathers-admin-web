@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import styles from './server-connection.module.scss';
 import { Input, Select, Button, Row, Col } from 'antd';
-import { defaultConnectionInfo } from '../../hooks/use-connection';
 import * as PropTypes from 'prop-types';
 
 const Option = Select.Option;
 
-const ServerConnection = ({ connectionInfo, loading, connected, connect, disconnect, setConnectionInfo }) => {
+const ServerConnection = ({ loading, connected, uri, connect, disconnect }) => {
 
     const defaultProtocol = 'http://';
+    const defaultDomain = 'localhost:3030';
+
     const [protocol, setProtocol] = useState(defaultProtocol);
-    const [domain, setDomain] = useState('');
+    const [domain, setDomain] = useState(defaultDomain);
 
     const protocolSelect = (
         <Select defaultValue={defaultProtocol} style={{ width: 90 }} onChange={value => setProtocol(value)}>
@@ -20,12 +21,10 @@ const ServerConnection = ({ connectionInfo, loading, connected, connect, disconn
     );
 
     const onConnected = () => {
-        setConnectionInfo(`Connected to ${protocol}${domain}`);
     };
 
     const onDisconnected = () => {
-        setConnectionInfo(defaultConnectionInfo);
-        setDomain('');
+        setDomain(defaultDomain);
         setProtocol(defaultProtocol);
     };
 
@@ -34,13 +33,13 @@ const ServerConnection = ({ connectionInfo, loading, connected, connect, disconn
             <div className={styles.stack}>
                 {connected ? (
                     <div className={styles.status}>
-                        <span className={styles.connectionInfo}>{connectionInfo}</span>
+                        <span className={styles.connectionInfo}>Connected to {uri}</span>
                         <Button
                             htmlType="button"
                             type="circle"
                             icon="logout"
                             loading={loading}
-                            onClick={() => disconnect(onDisconnected)}
+                            onClick={() => disconnect(uri, onDisconnected)}
                         />
                     </div>
                 ) : (
@@ -60,7 +59,7 @@ const ServerConnection = ({ connectionInfo, loading, connected, connect, disconn
                                 type="primary"
                                 icon="login"
                                 loading={loading}
-                                onClick={() => connect(onConnected, !!domain)}
+                                onClick={() => connect(`${protocol}${domain}`, onConnected, !!domain)}
                             >Connect</Button>
                         </Col>
                     </Row>
@@ -71,12 +70,11 @@ const ServerConnection = ({ connectionInfo, loading, connected, connect, disconn
 };
 
 ServerConnection.propTypes = {
-    connectionInfo: PropTypes.string,
     loading: PropTypes.bool,
     connected: PropTypes.bool,
+    uri: PropTypes.string,
     connect: PropTypes.func,
     disconnect: PropTypes.func,
-    setConnectionInfo: PropTypes.func,
 };
 
 export default ServerConnection;

@@ -11,14 +11,13 @@ const { Text } = Typography;
 const App = () => {
 
     const {
-        connectionInfo,
         loading,
         connected,
-        connect,
-        disconnect,
-        setConnectionInfo,
+        uri,
         user,
         error,
+        connect,
+        disconnect,
     } = useConnection();
 
     return (
@@ -28,19 +27,18 @@ const App = () => {
                     <Col>
                         Feathers Admin
                     </Col>
-                    {user && (
+                    {connected && user && (
                         <Col>
                             Hello, {user.displayName} ;)
                         </Col>
                     )}
                     <Col>
                         <ServerConnection
-                            connectionInfo={connectionInfo}
                             loading={loading}
                             connected={connected}
+                            uri={uri}
                             connect={connect}
                             disconnect={disconnect}
-                            setConnectionInfo={setConnectionInfo}
                         />
                     </Col>
                 </Row>

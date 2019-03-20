@@ -1,15 +1,14 @@
-import auth     from '@feathersjs/authentication-client';
+import auth from '@feathersjs/authentication-client';
 import feathers from '@feathersjs/feathers';
 import socketio from '@feathersjs/socketio-client';
-import io       from 'socket.io-client';
+import io from 'socket.io-client';
 
-const feathersApiUri = 'localhost:3030';
+const feathersClients = [];
 
-let feathersClient = null;
+const createFeathersClient = uri => {
 
-const createFeathersClient = () => {
-    const socket = io(feathersApiUri, {
-        transports: ['websocket']
+    const socket = io(uri, {
+        transports: ['websocket'],
     });
     const app = feathers();
 
@@ -17,15 +16,22 @@ const createFeathersClient = () => {
 
     // The transports plugins (Rest, Socket, Primus...) must have been initialized previously to the authentication plugin
     app.configure(auth({
-        storage: window.localStorage // Passing a WebStorage-compatible object to enable automatic storage on the client.
+        storage: window.localStorage, // Passing a WebStorage-compatible object to enable automatic storage on the client.
     }));
 
-    return app;
+    const feathersClient = { uri, app };
+    feathersClients.push(feathersClient);
+
+    return feathersClient;
 };
 
-export const getFeathersClient = () => {
+const findFeathersClient = uri => feathersClients.find(client => client.uri === uri);
+
+export const getFeathersClient = uri => {
+
+    let feathersClient = findFeathersClient(uri);
     if (!feathersClient) {
-        feathersClient = createFeathersClient();
+        feathersClient = createFeathersClient(uri);
     }
     return feathersClient;
 };

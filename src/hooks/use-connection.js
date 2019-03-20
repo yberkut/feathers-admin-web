@@ -1,25 +1,57 @@
 import { useState, useEffect } from 'react';
 import { getFeathersClient } from '../services/feathers-client';
 
-export const defaultConnectionInfo = 'Disconnected';
-
 export const useConnection = () => {
 
-    const [connectionInfo, setConnectionInfo] = useState(defaultConnectionInfo);
     const [loading, setLoading] = useState(false);
     const [connected, setConnected] = useState(false);
+    const [disconnected, setDisconnected] = useState(false);
+    const [uri, setUri] = useState(null);
     const [user, setUser] = useState(null);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        updateAuth();
-    }, [user]);
+        if (!uri) {
+            const storageUri = getUriFromStorage();
+            storageUri && setUri(storageUri);
+        } else if (uri && !disconnected) {
+            updateAuth(uri, onStart, onDone);
+        }
+    }, [uri, connected, disconnected]);
 
-    const updateAuth = async (onStart = () => {}, onDone = () => {}) => {
+    const doOAuthLogin = () => {
+        // window.location.replace('http://localhost:3030/auth/github');
+    };
+
+    const addUriToStorage = uri => {
+        window.localStorage.setItem('serverUri', uri);
+    };
+
+    const getUriFromStorage = () => {
+        return window.localStorage.getItem('serverUri');
+    };
+
+    const removeUriFromStorage = () => {
+        window.localStorage.removeItem('serverUri');
+    };
+
+    const updateAuth = async (uri, onStart, onDone) => {
+
+        if (!uri) {
+            setError('URI should be defined to establish connection with a server!');
+            return;
+        }
+
+        let feathersClient;
+        try {
+            feathersClient = getFeathersClient(uri).app;
+        } catch (error) {
+            setError(error);
+            return;
+        }
+
         try {
             onStart();
-
-            const feathersClient = getFeathersClient();
 
             const jwtPayload = await feathersClient.authenticate()
                 .then(response => feathersClient.passport
@@ -29,74 +61,59 @@ export const useConnection = () => {
 
                 setUser(user);
                 setConnected(true);
+                setDisconnected(false);
 
             } catch (e) {
                 setError(`User "${jwtPayload.userId}" is not found! ${error}`);
                 setUser(null);
-                setConnected(true);
+                setConnected(false);
             }
         } catch (error) {
-            setError(`User is unknown ${error}`);
             setUser(null);
-            window.location.replace('http://localhost:3030/auth/github');
+            doOAuthLogin();
         } finally {
             onDone();
         }
     };
 
-    const connect = (onConnected, connectionClause = true) => {
-        setError(null);
+    const onStart = () => {
+        setLoading(true);
+    };
 
-        // const feathersClient = getFeathersClient();
+    const onDone = () => {
+        setLoading(false);
+    };
+
+    const connect = (uri, onConnected, connectionClause = true) => {
+        setError(null);
+        setDisconnected(false);
+
+        if (!uri) {
+            setError('You have to provide URI!');
+            return;
+        }
+
+        addUriToStorage(uri);
+        setUri(uri);
 
         if (!connectionClause) {
             setError(`connectionClause error`);
             return;
         }
 
-        const onStart = () => {
-            setLoading(true);
-        };
-
-        const onDone = () => {
-            setLoading(false);
-        };
-
-        updateAuth(onStart, onDone);
-        //
-        // feathersClient.authenticate()
-        //     .then(response => feathersClient.passport.verifyJWT(response.accessToken))
-        //     .then(payload => {
-        //         console.log('JWT Payload', payload);
-        //         feathersClient.service('users').get(payload.userId)
-        //             .then(user => {
-        //                 console.log(`User is found!`, user);
-        //                 setUser(user);
-        //                 setConnected(true);
-        //                 setLoading(false);
-        //                 onConnected();
-        //             })
-        //             .catch(error => {
-        //                 setError(`User "${payload.userId}" is not found! ${error}`);
-        //                 setUser(null);
-        //                 setLoading(false);
-        //             });
-        //     })
-        //     .catch(error => { // user is not authenticated
-        //         setError(`User is unknown ${error}`);
-        //         setUser(null);
-        //         setLoading(false);
-        //         window.location.replace('http://localhost:3030/auth/github');
-        //     });
+        updateAuth(uri, onStart, onDone);
     };
 
-    const disconnect = async onDisconnected => {
+    const disconnect = async (uri, onDisconnected) => {
+        removeUriFromStorage();
         setLoading(true);
-        const feathersClient = getFeathersClient();
+        const feathersClient = getFeathersClient(uri).app;
         try {
+            setDisconnected(true);
             await feathersClient.logout();
             setLoading(false);
             setConnected(false);
+            setUri(null);
             onDisconnected();
         } catch (e) {
             setError(e);
@@ -104,13 +121,12 @@ export const useConnection = () => {
     };
 
     return {
-        connectionInfo,
         loading,
         connected,
+        uri,
         user,
         error,
         connect,
         disconnect,
-        setConnectionInfo: info => setConnectionInfo(info || defaultConnectionInfo),
     };
 };
