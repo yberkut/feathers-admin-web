@@ -20,7 +20,7 @@ export const useConnection = () => {
     }, [uri, connected, disconnected]);
 
     const doOAuthLogin = () => {
-        // window.location.replace('http://localhost:3030/auth/github');
+        window.location.replace('http://localhost:3030/auth/github');
     };
 
     const addUriToStorage = uri => {
@@ -44,7 +44,7 @@ export const useConnection = () => {
 
         let feathersClient;
         try {
-            feathersClient = getFeathersClient(uri).app;
+            feathersClient = await getFeathersClient(uri);
         } catch (error) {
             setError(error);
             return;
@@ -107,16 +107,16 @@ export const useConnection = () => {
     const disconnect = async (uri, onDisconnected) => {
         removeUriFromStorage();
         setLoading(true);
-        const feathersClient = getFeathersClient(uri).app;
         try {
+            const feathersClient = await getFeathersClient(uri);
             setDisconnected(true);
             await feathersClient.logout();
             setLoading(false);
             setConnected(false);
             setUri(null);
             onDisconnected();
-        } catch (e) {
-            setError(e);
+        } catch (error) {
+            setError(error);
         }
     };
 
