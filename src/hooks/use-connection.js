@@ -11,10 +11,17 @@ export const useConnection = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!uri) {
+        const storageUri = getUriFromStorage();
+        storageUri && setUri(storageUri);
+        !storageUri && setDisconnected(true);
+    }, []);
+
+    useEffect(() => {
+        /*if (!uri) {
             const storageUri = getUriFromStorage();
             storageUri && setUri(storageUri);
-        } else if (uri && !disconnected) {
+        } else */
+        if (uri && !disconnected) {
             // noinspection JSIgnoredPromiseFromCall
             updateAuth(uri, onStart, onDone);
         }
@@ -48,6 +55,9 @@ export const useConnection = () => {
             feathersClient = await getFeathersClient(uri);
         } catch (error) {
             setError(error);
+            setLoading(false);
+            setDisconnected(true);
+            setConnected(false);
             return;
         }
 
@@ -126,6 +136,7 @@ export const useConnection = () => {
     return {
         loading,
         connected,
+        disconnected,
         uri,
         user,
         error,

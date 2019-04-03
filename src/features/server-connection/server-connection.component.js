@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import styles from './server-connection.module.scss';
-import { Input, Select, Button, Row, Col } from 'antd';
+import { Input, Select, Button, Row, Col, Spin, Icon } from 'antd';
 import * as PropTypes from 'prop-types';
 
 const Option = Select.Option;
 
-const ServerConnection = ({ loading, connected, uri, connect, disconnect }) => {
+const ServerConnection = ({ loading, connected, disconnected, uri, connect, disconnect }) => {
 
     const defaultProtocol = 'http://';
     const defaultDomain = 'localhost:3030';
@@ -24,6 +24,14 @@ const ServerConnection = ({ loading, connected, uri, connect, disconnect }) => {
         setDomain(defaultDomain);
         setProtocol(defaultProtocol);
     };
+
+    const renderWaitingMode = () => (
+        <Spin
+            indicator={
+                <Icon type="loading" style={{ fontSize: 24 }} spin />
+            }
+        />
+    );
 
     const renderDisconnectedMode = () => (
         <Row>
@@ -64,7 +72,9 @@ const ServerConnection = ({ loading, connected, uri, connect, disconnect }) => {
     return (
         <div className={styles.root}>
             <div className={styles.stack}>
-                {connected ? renderConnectedMode() : renderDisconnectedMode()}
+                {!connected && !disconnected && renderWaitingMode()}
+                {connected && renderConnectedMode()}
+                {disconnected && renderDisconnectedMode()}
             </div>
         </div>
     );
@@ -73,6 +83,7 @@ const ServerConnection = ({ loading, connected, uri, connect, disconnect }) => {
 ServerConnection.propTypes = {
     loading: PropTypes.bool,
     connected: PropTypes.bool,
+    disconnected: PropTypes.bool,
     uri: PropTypes.string,
     connect: PropTypes.func,
     disconnect: PropTypes.func,

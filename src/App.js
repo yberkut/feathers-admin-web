@@ -13,6 +13,7 @@ const App = () => {
     const {
         loading,
         connected,
+        disconnected,
         uri,
         user,
         error,
@@ -36,6 +37,7 @@ const App = () => {
                         <ServerConnection
                             loading={loading}
                             connected={connected}
+                            disconnected={disconnected}
                             uri={uri}
                             connect={connect}
                             disconnect={disconnect}
