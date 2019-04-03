@@ -15,6 +15,7 @@ export const useConnection = () => {
             const storageUri = getUriFromStorage();
             storageUri && setUri(storageUri);
         } else if (uri && !disconnected) {
+            // noinspection JSIgnoredPromiseFromCall
             updateAuth(uri, onStart, onDone);
         }
     }, [uri, connected, disconnected]);
@@ -84,9 +85,10 @@ export const useConnection = () => {
         setLoading(false);
     };
 
-    const connect = (uri, onConnected, connectionClause = true) => {
+    const connect = (uri, connectionClause = true) => {
         setError(null);
         setDisconnected(false);
+        setLoading(true);
 
         if (!uri) {
             setError('You have to provide URI!');
@@ -101,6 +103,7 @@ export const useConnection = () => {
             return;
         }
 
+        // noinspection JSIgnoredPromiseFromCall
         updateAuth(uri, onStart, onDone);
     };
 
